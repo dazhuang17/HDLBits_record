@@ -2,13 +2,14 @@ module top_module(
     input in,
     input [3:0] state,
     output [3:0] next_state,
-    output out
-);
+    output out); //
 
-assign next_state[0] = state[0]&~in | state[2]&~in;
-assign next_state[1] = state[0]&in | state[1]&in | state[3]&in;
-assign next_state[2] = state[1]&~in | state[3]&~in;
-assign next_state[3] = state[2]&in;
-assign out = state[3];
+    parameter A=0, B=1, C=2, D=3;
+
+    assign next_state[A] = state[A] & ~in | state[C] & ~in;
+    assign next_state[B] = state[A] & in | state[B] & in | state[D] & in;
+    assign next_state[C] = state[B] & ~in | state[D] & ~in;
+    assign next_state[D] = state[C] & in;
+    assign out = state[D];
 
 endmodule

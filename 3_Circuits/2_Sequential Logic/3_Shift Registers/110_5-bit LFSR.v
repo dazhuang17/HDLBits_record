@@ -1,11 +1,19 @@
-module top_module (
+module top_module(
     input clk,
-    input reset,
-    output reg [4:0] q
+    input reset,    // Active-high synchronous reset to 5'h1
+    output [4:0] q
 );
-
-always @(posedge clk)
-    if (reset) q <= 1;
-    else q <= {q[0], q[4], q[3] ^ q[0], q[2], q[1]};
+    reg [4:0] temp;
+    always @(posedge clk) begin
+        if (reset) temp <= 5'h1;
+        else begin
+            temp[4] <= 1'b0 ^ temp[0];
+            temp[3] <= temp[4];
+            temp[2] <= temp[3] ^ temp[0];
+            temp[1] <= temp[2];
+            temp[0] <= temp[1];
+        end
+    end
+    assign q = temp;
 
 endmodule

@@ -1,24 +1,66 @@
-# __Solutions of HDLBits Problems - Verilog Practice__
+# __HDLBits Record__
 
-HDLBits is a collection of small circuit design exercises for practicing digital hardware design using Verilog Hardware Description Language.
+## 0 写在前面
+- 本套答案与分析参考于[Shengrong-LSR](https://github.com/Shengrong-LSR/HDLBits-Solutions-Verilog) 和[LogicJitterGibbs](https://www.zhihu.com/column/c_1131528588117385216) 。
+- 十分抱歉，部分答案未能给出答案与分析。
 
-_( Main Page : https://hdlbits.01xz.net/wiki/Main_Page )_
+### 1 Getting Started
+[入门](./1_Getting%20Started/readme.md)
 
-This repository contains my own solutions of all 178 problems on the website. The problems are not very complicated and friendly for beginners. I've been trying to find the simplest solution of each problem as much as I can. If you have a different solution of any problem, feel free to discuss with me.
+### 2 Verilog Language
+专注Verilog语法，共计41个问题（3-43）。  
+<details>
+<summary>详情</summary>
 
-## __Contents__
+- [Basics](./2_Verilog%20Language/1_Basics/readme.md)
+- [Vectors](./2_Verilog%20Language/2_Vectors/readme.md)
+- [Modules - Hierarchy](./2_Verilog%20Language/3_Modules%20-%20Hierarchy/readme.md)
+- [Procedures](./2_Verilog%20Language/4_Procedures/readme.md)
+- [More Verilog Features](./2_Verilog%20Language/5_More%20Verilog%20Features/readme.md)
+</details>
 
-### __Getting Started__
-2 problems in total (1-2). An easy start.
+### 3 Circuits
+涉及多路复用器、加法器、触发器、计数器、移位寄存器、状态机等，共计115个问题（44-158）。  
+<details>
+<summary>详情</summary>
 
-### __Verilog Language__
-41 problems in total (3-43). Focus on Verilog syntax.
+- Combinational Logic
+  <details>
+  <summary>详情</summary>
 
-### __Circuits__
-115 problems in total (44-158). Some typical circuits implemented by combinational or sequential logic, including multiplexers, adders, flip-flops, counters, shift registers, state machines, etc.
+  - [Basic Gates](./3_Circuits/1_Combinational%20Logic/1_Basic%20Gates/readme.md)
+  - [Multiplexers](./3_Circuits/1_Combinational%20Logic/2_Multiplexers/readme.md)
+  - [Arithmetic Circuits](./3_Circuits/1_Combinational%20Logic/3_Arithmetic%20Circuits/readme.md)
+  - [Karnaugh Map to Circuit](./3_Circuits/1_Combinational%20Logic/4_Karnaugh%20Map%20to%20Circuit/readme.md)
+  </details>
+  
+- Sequential Logic
+  <details>
+  <summary>详情</summary>
 
-### __Verification: Reading Simulations__
-15 problems in total (159-173). Focus on reading simulation waveforms.
+  - [Latches and Flip-Flops](./3_Circuits/2_Sequential%20Logic/1_Latches%20and%20Flip-Flops/readme.md)
+  - [Counters](./3_Circuits/2_Sequential%20Logic/2_Counters/README.md)
+  - [Shift Registers](./3_Circuits/2_Sequential%20Logic/3_Shift%20Registers/readme.md)
+  - [More Circuits](./3_Circuits/2_Sequential%20Logic/4_More%20Circuits/readme.md)
+  - [Finite State Machines](./3_Circuits/2_Sequential%20Logic/5_Finite%20State%20Machines/readme_0.md)
+  </details>
+  
+- [Building Larger Circuits](./3_Circuits/3_Building%20Larger%20Circuits/readme.md)
 
-### __Verification: Writing Testbenches__
-5 problems in total (174-178). Easy testbench writing.
+</details>
+
+
+### 4 Verification: Reading Simulations
+涉及仿真波形，共计15个问题（159-173）。  
+<details>
+<summary>详情</summary>
+
+- [Finding bugs in code](./4_Verification%20-%20Reading%20Simulations/1_Finding%20bugs%20in%20code/readme.md)
+- [Build a circuit from a simulation waveform](./4_Verification%20-%20Reading%20Simulations/2_Build%20a%20circuit%20from%20a%20simulation%20waveform/readme.md)
+
+</details>
+
+### 5 Verification: Writing Testbenches__
+涉及编写TB，共计5个问题（174-178）。
+- [Testbenches](./5_Verification%20-%20Writing%20Testbenches/readme.md)
+

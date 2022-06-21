@@ -3,13 +3,12 @@ module top_module (
     input enable,
     input S,
     input A, B, C,
-    output Z
-);
+    output Z );
 
-reg [7:0] Q;
-always @(posedge clk)
-    if (~enable) Q <= Q;
-    else Q <= {Q[6:0], S};
-assign Z = Q[{A, B, C}];
+    reg[7:0] temp;
+    always@(posedge clk)begin
+        if(enable) temp	<= {temp[6:0], S};
+    end
+    assign Z = temp[{A,B,C}];
 
 endmodule

@@ -2,9 +2,10 @@ module top_module(
     input clk,
     input load,
     input [255:0] data,
-    output reg [255:0] q
+    output [255:0] q
 );
 
+reg [255:0] q_temp;
 reg [15:0] q_2d[15:0];
 reg [255:0] q_rt;
 integer i, j;
@@ -12,13 +13,13 @@ integer cnt;
 integer u, d, l, r;
 always @(*) begin
     for (i = 0; i < 16; i = i + 1)
-        q_2d[i] = q[16*i +: 16];
+        q_2d[i] = q_temp[16*i +: 16];
     for (i = 0; i < 16; i = i + 1)
         for (j = 0; j < 16; j = j + 1) begin
-            u = i == 15 ? 0 : i + 1;
-            d = i == 0 ? 15 : i - 1;
-            l = j == 15 ? 0 : j + 1;
-            r = j == 0 ? 15 : j - 1;
+            u = (i == 15) ? 0 : i + 1;
+            d = (i == 0) ? 15 : i - 1;
+            l = (j == 15) ? 0 : j + 1;
+            r = (j == 0) ? 15 : j - 1;
             cnt = q_2d[u][l] + q_2d[u][j] + q_2d[u][r] +
                   q_2d[i][l] +            + q_2d[i][r] +
                   q_2d[d][l] + q_2d[d][j] + q_2d[d][r];
@@ -31,7 +32,9 @@ always @(*) begin
 end
 
 always @(posedge clk)
-    if (load) q <= data;
-    else q <= q_rt;
+    if (load) q_temp <= data;
+    else q_temp <= q_rt;
+
+assign q = q_temp;
 
 endmodule

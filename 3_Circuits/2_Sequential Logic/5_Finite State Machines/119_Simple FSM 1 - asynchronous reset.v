@@ -1,21 +1,25 @@
-module top_module (
+module top_module(
     input clk,
-    input areset,
+    input areset,    // Asynchronous reset to state B
     input in,
-    output out
-);
+    output out);//
 
-reg cs, ns;
-parameter A = 1'b0, B = 1'b1;
-always @(posedge clk or posedge areset)
-    if (areset) cs <= B;
-    else cs <= ns;
-always @(*)
-    case (cs)
-        A: ns = in ? A : B;
-        B: ns = in ? B : A;
-        default: ns = B;
-    endcase
-assign out = cs == B;
+    parameter A=0, B=1;
+    reg state, next_state;
+
+    always @(*) begin    // This is a combinational always block
+        case (state)
+            A: next_state = in ? A : B;
+            B: next_state = in ? B : A;
+        endcase
+    end
+
+    always @(posedge clk, posedge areset) begin    // This is a sequential always block
+        if (areset) state <= B;
+        else state <= next_state;
+    end
+
+    // Output logic
+    assign out = (state == B);
 
 endmodule
