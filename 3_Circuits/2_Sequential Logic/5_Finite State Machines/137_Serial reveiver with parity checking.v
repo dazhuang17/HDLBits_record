@@ -1,49 +1,69 @@
 module top_module(
     input clk,
     input in,
-    input reset,
-    output reg [7:0] out_byte,
+    input reset,    // Synchronous reset
+    output [7:0] out_byte,
     output done
-);
+); //
 
-reg [3:0] cnt;
-wire odd;
-wire rst_parity;
-reg [1:0] cs, ns;
-parameter IDLE = 2'b00,
-          RECV = 2'b01,
-          DONE = 2'b10,
-          WAIT = 2'b11;
-// State flip-flops
-always @(posedge clk)
-    if (reset) cs <= IDLE;
-    else cs <= ns;
-// State transition logic
-always @(*)
-    case (cs)
-        IDLE: ns = in ? IDLE : RECV;
-        RECV: ns = cnt > 0 ? RECV : (in ? (odd ? DONE : IDLE) : WAIT);
-        DONE: ns = in ? IDLE : RECV;
-        WAIT: ns = in ? IDLE : WAIT;
-        default: ns = IDLE;
-    endcase
-// Counter
-always @(posedge clk)
-    if (reset) cnt <= 10;
-    else case (ns)
-        IDLE, DONE: cnt <= 10;
-        RECV: cnt <= cnt - 1;
-        default: cnt <= cnt;
-    endcase
-// Parity check
-parity parity_0 (clk, rst_parity, in, odd);
-assign rst_parity = !(cs == RECV);
-// Output done
-assign done = cs == DONE;
-// Output out_byte
-always @(posedge clk)
-    if (reset) out_byte <= 8'b0;
-    else if (ns == RECV) out_byte[9 - cnt] <= in;
-    else out_byte <= out_byte;
+    parameter error=4'd0,
+              data_0=4'd1,
+              data_1=4'd2,
+              data_2=4'd3,
+              data_3=4'd4,
+              data_4=4'd5,
+              data_5=4'd6,
+              data_6=4'd7,
+              data_7=4'd8,
+              check=4'd11,
+              stop=4'd9,
+              idle=4'd10;
+
+    reg [3:0] state,next_state;
+
+    always @(*) begin
+        case(state)
+            error: next_state = in ? idle : error;
+            data_0 : next_state = data_1;
+            data_1 : next_state = data_2;
+            data_2 : next_state = data_3;
+            data_3 : next_state = data_4;
+            data_4 : next_state = data_5;
+            data_5 : next_state = data_6;
+            data_6 : next_state = data_7;
+            data_7 : next_state = check;
+            check: next_state = stop;
+            stop : next_state = in ? idle : error;
+            idle : next_state = in ? idle : data_0;
+            default: next_state = idle;
+        endcase
+    end
+
+    always @(posedge clk)begin
+        if (reset) state <= idle;
+        else state <= next_state;
+    end
+
+    reg temp;
+    always @(posedge clk)begin
+        if (state==stop) begin
+            if(next_state==idle) begin
+                if (^data[10:2] == 1'b1)
+                	temp <= 1'b1;
+            	else temp <= 1'b0;
+            end
+            else temp <= 1'b0;
+        end
+        else temp <= 1'b0;
+    end
+
+    reg [10:0] data;
+    always @(posedge clk)begin
+        if (reset) data <= 10'b0;
+        else data <= {in, data[10:1]};
+    end
+
+    assign done = temp;
+    assign out_byte = temp ? data[8:1] : out_byte;
 
 endmodule

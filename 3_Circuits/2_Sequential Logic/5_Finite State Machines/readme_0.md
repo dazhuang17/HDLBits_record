@@ -1,9 +1,10 @@
 # Circuits -> Sequential Logic -> Finite State Machines
 
 ## -1 写在前面
-- [119-130](./readme_0.md)
-- [131-140](./readme_1.md)
-- [141-151](./readme_2.md)
+- [119-127](./readme_0.md)
+- [128-134](./readme_1.md)
+- [135-141](./readme_2.md)
+- [142-151](./readme_3.md)
 
 ## 119 Simple FSM 1 - asynchronous reset
 <details>
@@ -342,40 +343,15 @@ endmodule
 <details>
 <summary>详情</summary>
 
-构建一输入一输出四状态的摩尔状态机。`同步复位，复位置A`。  
-`A=2'b00, B=2'b01, C=2'b10, D=2'b11`。  
-以下是状态转移表。   
+无。   
 ![](./images/4.jpg)  
 
 **分析**  
-与125一样。  
+无。  
 
 **答案**  
 ```
-module top_module(
-    input clk,
-    input in,
-    input reset,
-    output out); //
-
-    parameter A=2'b0, B=2'b01, C=2'b10, D=2'b11;
-    reg [1:0] next_state,state;
-    always @(*)begin
-        case(state)
-            A: next_state = in ? B : A;
-            B: next_state = in ? B : C;
-            C: next_state = in ? D : A;
-            D: next_state = in ? B : C;
-        endcase
-    end
-    
-    always @(posedge clk)begin
-        if (reset) state <= A;
-        else state <= next_state;
-    end
-    
-    assign out = (state==D);
-endmodule
+无
 ```
 
 </details>

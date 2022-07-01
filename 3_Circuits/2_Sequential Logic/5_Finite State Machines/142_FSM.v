@@ -1,34 +1,53 @@
 module top_module (
     input clk,
-    input reset,
+    input reset,   // Synchronous reset
     input s,
     input w,
     output z
 );
+    parameter A=1'b0,
+              B=1'b1;
+    reg state,next_state;
+    always @(*) begin
+        case(state)
+            A: next_state = s ? B : A;
+            B : next_state = B;
+            default: next_state = A;
+        endcase
+    end
 
-reg [1:0] cnt;
-reg [1:0] cs, ns;
-parameter A = 2'b00, B = 2'b01, C = 2'b10, D = 2'b11;
-always @(posedge clk)
-    if (reset) cs <= A;
-    else cs <= ns;
-always @(*)
-    case (cs)
-        A: ns = s ? B : A;
-        B: ns = C;
-        C: ns = D;
-        D: ns = B;
-        default: ns = A;
-    endcase
-// Counter
-always @(posedge clk)
-    if (reset) cnt <= 0;
-    else case (cs)
-        B: cnt <= w;
-        C, D: cnt <= cnt + w;
-        default: cnt <= 0;
-    endcase
-// Output z
-assign z = cs == B && cnt == 2;
+    always @(posedge clk)begin
+        if (reset) state <= A;
+        else state <= next_state;
+    end
+
+    reg [1:0] temp;
+    reg [1:0] cnt=2'b0;
+    reg flag;
+    always @(posedge clk)begin
+        if (reset) begin
+            flag <= 1'b0;
+            cnt <= 3'b0;
+        end
+        else if (state==B) begin
+            //flag <= 1'b1;
+            if (cnt==3'd2)begin
+                cnt <= 3'b0;
+                if (temp[1]+temp[0]+w == 2'd2) begin
+                //if(~(^temp ^ w))begin
+                    flag <= 1'b1;
+                    //temp <= 2'b0;
+                end
+                else flag <= 1'b0;
+            end
+            else begin
+                temp <= {temp[0],w};
+                cnt <= cnt + 1'b1;
+                flag <= 1'b0;
+            end
+        end
+    end
+
+    assign z = flag;
 
 endmodule

@@ -1,23 +1,29 @@
 module top_module(
     input clk,
-    input areset,
+    input areset,    // Freshly brainwashed Lemmings walk left.
     input bump_left,
     input bump_right,
     output walk_left,
-    output walk_right
-);
+    output walk_right); //
 
-reg cs, ns;
-parameter LEFT = 1'b0, RIGHT = 1'b1;
-always @(posedge clk or posedge areset)
-    if (areset) cs <= LEFT;
-    else cs <= ns;
-always @(*)
-    case (cs)
-        LEFT: ns = bump_left ? RIGHT : LEFT;
-        RIGHT: ns = bump_right ? LEFT : RIGHT;
-        default: ns = LEFT;
-    endcase
-assign {walk_left, walk_right} = cs == LEFT ? 2'b10 : 2'b01;
+    parameter LEFT=0, RIGHT=1;
+    reg state, next_state;
+
+    always @(*) begin
+        case(state)
+            LEFT: next_state = bump_left ? RIGHT : LEFT;
+            RIGHT: next_state = bump_right ? LEFT : RIGHT;
+            default: next_state = LEFT;
+        endcase
+    end
+
+    always @(posedge clk, posedge areset) begin
+        if (areset) state <= LEFT;
+        else state <= next_state;
+    end
+
+    // Output logic
+    assign walk_left = (state == LEFT);
+    assign walk_right = (state == RIGHT);
 
 endmodule
