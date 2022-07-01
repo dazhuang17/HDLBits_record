@@ -42,7 +42,7 @@
   - [Counters](./3_Circuits/2_Sequential%20Logic/2_Counters/README.md)
   - [Shift Registers](./3_Circuits/2_Sequential%20Logic/3_Shift%20Registers/readme.md)
   - [More Circuits](./3_Circuits/2_Sequential%20Logic/4_More%20Circuits/readme.md)
-  - [Finite State Machines](./3_Circuits/2_Sequential%20Logic/5_Finite%20State%20Machines/readme_0.md)
+  - [Finite State Machines](./3_Circuits/2_Sequential%20Logic/5_Finite%20State%20Machines/readme.md)
   </details>
   
 - [Building Larger Circuits](./3_Circuits/3_Building%20Larger%20Circuits/readme.md)
