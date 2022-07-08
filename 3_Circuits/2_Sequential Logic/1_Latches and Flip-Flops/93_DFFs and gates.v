@@ -3,13 +3,12 @@ module top_module (
     input x,
     output z
 );
-
-reg [2:0] q;
-always @(posedge clk) begin
-    q[2] <= q[2] ^ x;
-    q[1] <= x & ~q[1];
-    q[0] <= x | ~q[0];
-end
-assign z = ~(|q);
+    reg [2:0] num;
+    always @(posedge clk) begin
+        num[2] <= num[2] ^ x;
+        num[1] <= x & ~num[1];
+        num[0] <= x | ~num[0];
+    end
+    assign z = ~(|num);
 
 endmodule

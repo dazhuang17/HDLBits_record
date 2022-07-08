@@ -6,7 +6,5 @@ module top_module (
     output out1,
     output out2
 );
-
-mod_a mod_a_0 (out1, out2, a, b, c, d);
-
+    mod_a mod_a_0 (out1, out2, a, b, c, d);
 endmodule

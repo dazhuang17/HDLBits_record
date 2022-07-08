@@ -6,6 +6,6 @@ module top_module(
     output out
 );
 
-assign out = ~b&~c | ~a&~d | b&c&d | a&c&d;
+    assign out = ~b&~c | ~a&~d | b&c&d | a&c&d;
 
 endmodule

@@ -1,10 +1,10 @@
 module top_module (
-    input clk,
+    input clk,    // Clocks are used in sequential circuits
     input d,
-    output reg q
-);
+    output reg q );//
 
-always @(posedge clk)
-    q <= d;
+    always @(posedge clk)begin
+        q <= d;
+    end
 
 endmodule

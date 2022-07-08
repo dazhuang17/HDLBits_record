@@ -1,8 +1,6 @@
-module top_module(
-    input in,
-    output out
-);
+module top_module( output one );
 
-assign out = in;
+// Insert your code here
+    assign one = 1'b1;
 
 endmodule

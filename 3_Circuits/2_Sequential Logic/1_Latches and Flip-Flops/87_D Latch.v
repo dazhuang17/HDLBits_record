@@ -1,10 +1,8 @@
 module top_module (
     input d,
     input ena,
-    output reg q
-);
+    output q);
 
-always @(*)
-    q <= ena ? d : q;
+    assign q = ena ? d : q;
 
 endmodule

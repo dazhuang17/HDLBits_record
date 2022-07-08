@@ -2,19 +2,19 @@ module top_module(
     input [2:0] a, b,
     input cin,
     output [2:0] cout,
-    output [2:0] sum
-);
+    output [2:0] sum );
+    int i;
+    always @(*) begin
+        for(i = 0; i < 3 ; i = i + 1) begin
+            if (i==0) begin
+                sum[i] = a[i] ^ b[i] ^ cin;
+                cout[i] = a[i] & b[i] | cin & b[i] | a[i] & cin;
+            end
+            else begin
+                sum[i] = a[i] ^ b[i] ^ cout[i-1];
+                cout[i] = a[i] & b[i] | cout[i-1] & b[i] | a[i] & cout[i-1];
+            end
+        end
+    end
 
-fadd fadd0 (a[0], b[0], cin, cout[0], sum[0]);
-fadd fadd1 (a[1], b[1], cout[0], cout[1], sum[1]);
-fadd fadd2 (a[2], b[2], cout[1], cout[2], sum[2]);
-
-endmodule
-
-module fadd (
-    input a, b, cin,
-    output cout, sum
-);
-assign sum = a ^ b ^ cin;
-assign cout = a&b | a&cin | b&cin;
 endmodule

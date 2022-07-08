@@ -1,73 +1,267 @@
-# hardware_details
+# Circuits -> Sequential Logic -> Latches and Flip-Flops
 
 ## 0 写在前面
-- 具体硬件
-  - [气象百叶窗](./books/JXBS-3001-BYX.doc)
-  - [北斗定位装置](./books/HS6601.pdf)
-- 关于硬件，这边只做简单介绍
+- 本部分内容分为两部分
+- [第一部分](./readme.md)
+- [第二部分](./readme_1.md)  
 
-## 1 接口说明
-- **气象百叶窗**
-  <details>
-  <summary>详情</summary>  
-        
-    **气象百叶窗实物如下**  
-    ![Image text](./images/0.jpg) 
-    ![Image text](./images/1.jpg)  
+## 81 D flip-flop
+<details>
+<summary>详情</summary>
 
-    **note：**
-  - 电源接口为宽电压电源输入 12-24V 均可。485 信号线接线时注意 A/B 两条线不能接反，总线上多台设备间地址不能冲突
-  - 出厂默认提供0.6米长线材 ，客户可根据需要按需延长线材或者顺次接线。
-  </details>
+创建一个D触发器。  
 
+![](./images/0.jpg)  
 
-- **北斗定位装置**
-  <details>
-  <summary>详情</summary>  
-        
-    **北斗接口定义**
+**分析**  
+D触发器的赋值。。。应该懂吧。。。  
+一般来讲，是在时钟的上升沿采集数据，将数据存储，把上一次存储的值传递给参数。即 `延迟一周期显示数据`。  
 
-    |编号|端子定义|说明|
-    |:---:|:---:|:---:|
-    |1|电源适配器接口|输入 5~28V 直流电源|
-    |2|天线|SMA 天线接口|
-    |3|VCC|输出电源正极，与电源适配器接口联通|
-    |4|GND|输出电源负极|
-    |5|485 A|RS485 总线的A|
-    |6|485 B|RS485 总线的B|
-    |7|PWR 指示灯|电源指示灯，上电常亮|
-    |8|RUN 指示灯|运行指示灯，正常运行时亮 1 秒，灭 1 秒|
-    |9|TXD 指示灯|发送指示灯，向 RS485/RS232 总线接发送数据时闪烁|
-    |10|RXD 指示灯|接收指示灯，从 RS485/RS232 总线接收到数据时闪烁|
-    |11|PPS|秒脉冲指示灯	定位无效时常亮；定位有效后，每秒闪烁一次|
-    |12|按键|长按 5 秒，开始恢复出厂设置，同时 RUN 运行指示灯快闪，完成后，运行指示灯正常闪烁。出厂设置为：地址为 1，串口通信 9600/8/One/None。|
+**答案**  
+```
+module top_module (
+    input clk,    // Clocks are used in sequential circuits
+    input d,
+    output reg q );//
+
+    always @(posedge clk)begin
+        q <= d; 
+    end
+
+endmodule
+```
+
+</details>
+
+## 82 D flip-flops
+<details>
+<summary>详情</summary>
+
+创建8个D触发器。时钟上升沿触发。  
+
+**分析**  
+rush...  
+
+**答案**  
+```
+module top_module (
+    input clk,
+    input [7:0] d,
+    output [7:0] q
+);
+    always @(posedge clk)begin
+        q <= d; 
+    end
+
+endmodule
+```
+
+</details>
+
+## 83 DFF with reset
+<details>
+<summary>详情</summary>
+
+创建 8 个具有高电平有效同步复位的 D 触发器。所有 DFF 都应由 clk 的上升沿触发。  
+
+**分析**  
+rush...
+
+**答案**  
+```
+module top_module (
+    input clk,
+    input reset,            // Synchronous reset
+    input [7:0] d,
+    output [7:0] q
+);
+    always @(posedge clk)begin
+        if (reset)
+            q <= 8'b0;
+        else
+        	q <= d; 
+    end
+
+endmodule
+```
+
+</details>
+
+## 84 DFF with reset value
+<details>
+<summary>详情</summary>
+
+创建 8 个具有高电平有效同步复位的 D 触发器。触发器必须重置为 0x34 而不是零。所有 DFF 都应由 clk 的下降沿触发。  
+
+**分析**  
+rush...
+
+**答案**  
+```
+module top_module (
+    input clk,
+    input reset,
+    input [7:0] d,
+    output [7:0] q
+);
+    always @(negedge clk)begin
+        if (reset)
+            q <= 8'h34;
+        else
+        	q <= d; 
+    end
+
+endmodule
+```
+
+</details>
+
+## 85 DFF with asynchronous reset
+<details>
+<summary>详情</summary>
+
+创建 8 个具有高电平有效`异步复位`的 D 触发器。所有 DFF 都应由 clk 的上升沿触发。   
+
+**分析**  
+rush... 
+
+**答案**  
+```
+module top_module (
+    input clk,
+    input areset,   // active high asynchronous reset
+    input [7:0] d,
+    output [7:0] q
+);
+    always @(posedge clk or posedge areset)begin
+        if (areset)
+            q <= 8'b0;
+        else
+        	q <= d; 
+    end
+
+endmodule
+```
+
+</details>
+
+## 86 DFF with byte enable
+<details>
+<summary>详情</summary>
+
+创建 16 个 D 触发器。有时只修改一组触发器的一部分很有用。
+字节使能输入控制 16 个寄存器中的每个字节是否应在该周期写入。
+byteena[1] 控制高字节 d[15:8]，而 byteena[0] 控制低字节 d[7:0]。  
+resetn 是一个同步的低电平有效复位。  
+所有 DFF 都应由 clk 的上升沿触发。   
+
+**分析**  
+多一个选择器？  
+注意一下，可以全都要。  
+
+**答案**  
+```
+module top_module (
+    input clk,
+    input resetn,
+    input [1:0] byteena,
+    input [15:0] d,
+    output [15:0] q
+);
+    always @(posedge clk) begin
+        if (~resetn)
+            q <= 16'b0;
+        else begin 
+            if(byteena[0])
+                q[7:0] <= d[7:0];
+            if(byteena[1])
+                q[15:8] <= d[15:8]; 
+        end
+    end
+
+endmodule
+```
+
+</details>
+
+## 87 D Latch
+<details>
+<summary>详情</summary>
+
+创建一个D锁存器。
+
+![](./images/1.jpg)   
+
+**分析**  
+**锁存器相比触发器会消耗更多的资源。** 
+
+**答案**  
+```
+module top_module (
+    input d, 
+    input ena,
+    output q);
     
-    **北斗实物图**  
-    ![Image text](./images/2.jpg) 
-  </details>
+    assign q = ena ? d : q; 
 
-## 2 安装说明
-- 安装位置需要注意以下事项
-  <details>
-  <summary>详情</summary>
+endmodule
+```
 
-  - 变送器应尽量水平安防，保证安装垂直于水平面。
-  - 安装高度为人体坐高或主要要求测量的环境区域。
-  </details>
-  
-- 同时请注意以下防范事项
-  <details>
-  <summary>详情</summary>  
-  
-  - 避免在易于传热且会直接造成与待测区域产生温差的地带安装，否则会造成温湿度测量不准确。
-  - 安装在环境稳定的区域,避免直接光照,远离窗口及空调、暖气等设备,避免直对窗口、房门。
-  - 尽量远离大功率干扰设备，以免造成测量的不准确,如变频器、电机等。
-  </details>
+</details>
 
-## 附件连接
-- [硬件说明](./hw_details.md)。
-- [数据库配置](./db_config.md)。
-- [系统测试](./system_test.md)。
-- [系统常见问题](./Q&A.md)。
+## 88 DFF
+<details>
+<summary>详情</summary>
 
+完成以下电路。
 
+![](./images/2.jpg)   
+
+**分析**  
+应该能认出来这个是D触发器把。。。AR是异步复位的缩写（asynchronous reset）。 
+
+**答案**  
+```
+module top_module (
+    input clk,
+    input d, 
+    input ar,   // asynchronous reset
+    output q);
+    
+    always @(posedge clk or posedge ar) begin 
+        if(ar) q <= 1'b0;
+        else q <= d;
+    end
+
+endmodule
+```
+
+</details>
+
+## 89 DFF
+<details>
+<summary>详情</summary>
+
+完成以下电路。
+
+![](./images/3.jpg)   
+
+**分析**  
+R是同步复位的缩写（reset）。 
+
+**答案**  
+```
+module top_module (
+    input clk,
+    input d, 
+    input r,   // synchronous reset
+    output q);
+    
+    always @(posedge clk)
+        if (r) q <= 0;
+        else q <= d;
+
+endmodule
+```
+
+</details>

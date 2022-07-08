@@ -1,8 +1,7 @@
 module top_module (
     input [7:0] in,
-    output parity
-);
+    output parity);
 
-assign parity = ^in;
+    assign parity = ^in;
 
 endmodule

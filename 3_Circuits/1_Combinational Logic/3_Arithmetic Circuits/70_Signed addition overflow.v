@@ -5,7 +5,9 @@ module top_module (
     output overflow
 );
 
-assign s = a + b;
-assign overflow = ~s[7]&a[7]&b[7] | s[7]&~a[7]&~b[7];
+    reg [8:0] num;
+ 	assign num = a + b;
+    assign s = num[7:0];
+    assign overflow = ~s[7]&a[7]&b[7] | s[7]&~a[7]&~b[7];
 
 endmodule

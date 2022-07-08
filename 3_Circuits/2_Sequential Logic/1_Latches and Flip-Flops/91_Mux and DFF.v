@@ -3,10 +3,9 @@ module top_module (
 	input L,
 	input r_in,
 	input q_in,
-	output reg Q
-);
+	output reg Q);
 
-always @(posedge clk)
-    Q <= L ? r_in : q_in;
+    always @(posedge clk)
+    	Q <= L ? r_in : q_in;
 
 endmodule

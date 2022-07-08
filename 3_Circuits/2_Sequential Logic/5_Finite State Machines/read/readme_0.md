@@ -1,6 +1,6 @@
 # Circuits -> Sequential Logic -> Finite State Machines
 
-## -1 写在前面
+## 0 写在前面
 - [119-127](./readme_0.md)
 - [128-134](./readme_1.md)
 - [135-141](./readme_2.md)

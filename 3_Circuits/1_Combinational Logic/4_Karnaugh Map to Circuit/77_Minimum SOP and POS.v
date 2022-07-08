@@ -7,7 +7,7 @@ module top_module (
     output out_pos
 );
 
-assign out_sop = c&d | ~a&~b&c;
-assign out_pos = c & (~a|b) & (~b|d);
+    assign out_sop = c&d | ~a&~b&c;
+    assign out_pos = c & (~a|b) & (~b|d);
 
 endmodule

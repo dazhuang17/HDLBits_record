@@ -1,8 +1,7 @@
-module top_module (
+module top_module(
     input a, b, sel,
-    output out
-);
+    output out );
 
-assign out = sel ? b : a;
+    assign out = sel ? b : a;
 
 endmodule

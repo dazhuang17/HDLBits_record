@@ -1,8 +1,13 @@
-module top_module (
+module top_module(
     input [2:0] in,
-    output [1:0] out
-);
+    output [1:0] out );
 
-assign out = in[0] + in[1] + in[2];
+    int i;
+    always @(*) begin
+        out = 0;
+        for(i = 0;i < 3;i = i + 1)
+            if (in[i])
+            	out = out + 1'b1;
+    end
 
 endmodule
