@@ -1,13 +1,17 @@
 `timescale 1ps / 1ps
+module top_module ( );
+    parameter timer=5;
 
-module top_module;
+    reg clk;
+    dut u_dut( .clk(clk) ) ;
 
-reg clk;
-initial
-    clk = 1'b0;
-always
-    #5 clk = ~clk;
+    initial begin
+        clk = 0;
+    end
 
-dut dut_0 (clk);
+    always begin
+        # timer
+        clk = ~clk;
+    end
 
 endmodule

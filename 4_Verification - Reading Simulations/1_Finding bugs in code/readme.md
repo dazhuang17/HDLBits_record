@@ -1,73 +1,241 @@
-# hardware_details
+# Verification - Reading Simulations -> Finding bugs in code
 
-## 0 写在前面
-- 具体硬件
-  - [气象百叶窗](./books/JXBS-3001-BYX.doc)
-  - [北斗定位装置](./books/HS6601.pdf)
-- 关于硬件，这边只做简单介绍
+## 159 Mux
+<details>
+<summary>详情</summary>
 
-## 1 接口说明
-- **气象百叶窗**
-  <details>
-  <summary>详情</summary>  
-        
-    **气象百叶窗实物如下**  
-    ![Image text](./images/0.jpg) 
-    ![Image text](./images/1.jpg)  
+这个 8 位宽的 2 对 1 多路复用器不起作用。  
+```
+module top_module (
+    input sel,
+    input [7:0] a,
+    input [7:0] b,
+    output out  );
 
-    **note：**
-  - 电源接口为宽电压电源输入 12-24V 均可。485 信号线接线时注意 A/B 两条线不能接反，总线上多台设备间地址不能冲突
-  - 出厂默认提供0.6米长线材 ，客户可根据需要按需延长线材或者顺次接线。
-  </details>
+    assign out = (~sel & a) | (sel & b);
 
+endmodule
+```
 
-- **北斗定位装置**
-  <details>
-  <summary>详情</summary>  
-        
-    **北斗接口定义**
+**分析**  
+sel是一位， a,b是八位。。。  
 
-    |编号|端子定义|说明|
-    |:---:|:---:|:---:|
-    |1|电源适配器接口|输入 5~28V 直流电源|
-    |2|天线|SMA 天线接口|
-    |3|VCC|输出电源正极，与电源适配器接口联通|
-    |4|GND|输出电源负极|
-    |5|485 A|RS485 总线的A|
-    |6|485 B|RS485 总线的B|
-    |7|PWR 指示灯|电源指示灯，上电常亮|
-    |8|RUN 指示灯|运行指示灯，正常运行时亮 1 秒，灭 1 秒|
-    |9|TXD 指示灯|发送指示灯，向 RS485/RS232 总线接发送数据时闪烁|
-    |10|RXD 指示灯|接收指示灯，从 RS485/RS232 总线接收到数据时闪烁|
-    |11|PPS|秒脉冲指示灯	定位无效时常亮；定位有效后，每秒闪烁一次|
-    |12|按键|长按 5 秒，开始恢复出厂设置，同时 RUN 运行指示灯快闪，完成后，运行指示灯正常闪烁。出厂设置为：地址为 1，串口通信 9600/8/One/None。|
+**答案**  
+```
+module top_module (
+    input sel,
+    input [7:0] a,
+    input [7:0] b,
+    output [7:0] out  );
+
+    assign out = sel ? a : b;
+
+endmodule
+```
+
+</details>
+
+## 160 NAND
+<details>
+<summary>详情</summary>
+
+这个三输入NAND（与非门）不起作用。  
+您必须使用提供的 5 输入与门：  
+`module andgate ( output out, input a, input b, input c, input d, input e );`
+
+```
+module top_module (input a, input b, input c, output out);//
+
+    andgate inst1 ( a, b, c, out );
+
+endmodule
+```
+
+**分析**  
+这种写法要严格遵守次序。  
+
+**答案**  
+```
+module top_module (input a, input b, input c, output out);//
     
-    **北斗实物图**  
-    ![Image text](./images/2.jpg) 
-  </details>
+	wire out_1;
+    andgate inst1 ( out_1, a, b, c, 1'b1, 1'b1 );
+    assign out = ~out_1;
 
-## 2 安装说明
-- 安装位置需要注意以下事项
-  <details>
-  <summary>详情</summary>
+endmodule
+```
 
-  - 变送器应尽量水平安防，保证安装垂直于水平面。
-  - 安装高度为人体坐高或主要要求测量的环境区域。
-  </details>
-  
-- 同时请注意以下防范事项
-  <details>
-  <summary>详情</summary>  
-  
-  - 避免在易于传热且会直接造成与待测区域产生温差的地带安装，否则会造成温湿度测量不准确。
-  - 安装在环境稳定的区域,避免直接光照,远离窗口及空调、暖气等设备,避免直对窗口、房门。
-  - 尽量远离大功率干扰设备，以免造成测量的不准确,如变频器、电机等。
-  </details>
+</details>
 
-## 附件连接
-- [硬件说明](./hw_details.md)。
-- [数据库配置](./db_config.md)。
-- [系统测试](./system_test.md)。
-- [系统常见问题](./Q&A.md)。
+## 161 Mux
+<details>
+<summary>详情</summary>
 
+这个 4 对 1 多路复用器不起作用。  
+```
+module top_module (
+    input [1:0] sel,
+    input [7:0] a,
+    input [7:0] b,
+    input [7:0] c,
+    input [7:0] d,
+    output [7:0] out  ); //
 
+    wire mux0, mux1;
+    mux2 mux0 ( sel[0],    a,    b, mux0 );
+    mux2 mux1 ( sel[1],    c,    d, mux1 );
+    mux2 mux2 ( sel[1], mux0, mux1,  out );
+
+endmodule
+```
+
+为您提供了一个无错误的 2 对 1 多路复用器：  
+```
+module mux2 (
+    input sel,
+    input [7:0] a,
+    input [7:0] b,
+    output [7:0] out
+);
+```
+
+**分析**  
+sel的问题，这里题目也没说清楚，提交看了时序才明白。  
+
+**答案**  
+```
+module top_module (
+    input [1:0] sel,
+    input [7:0] a,
+    input [7:0] b,
+    input [7:0] c,
+    input [7:0] d,
+    output [7:0] out  ); //
+
+    wire [7:0] mux0, mux1;
+    mux2 m0 ( sel[0],    a,    b, mux0 );
+    mux2 m1 ( sel[0],    c,    d, mux1 );
+    mux2 m2 ( sel[1], mux0, mux1,  out );
+
+endmodule
+```
+
+</details>
+
+## 162 Add - sub
+<details>
+<summary>详情</summary>
+
+以下带有零标志的加减法器不起作用。  
+```
+module top_module ( 
+    input do_sub,
+    input [7:0] a,
+    input [7:0] b,
+    output reg [7:0] out,
+    output reg result_is_zero
+);//
+
+    always @(*) begin
+        case (do_sub)
+          0: out = a+b;
+          1: out = a-b;
+        endcase
+
+        if (~out)
+            result_is_zero = 1;
+    end
+
+endmodule
+```
+
+**分析**  
+零标志 -> out为0 -> out没有一个为1
+
+**答案**  
+```
+module top_module ( 
+    input do_sub,
+    input [7:0] a,
+    input [7:0] b,
+    output reg [7:0] out,
+    output result_is_zero
+);//
+
+    always @(*) begin
+        case (do_sub)
+          0: out = a+b;
+          1: out = a-b;
+        endcase
+    end
+    
+    assign result_is_zero = |out ? 1'b0 : 1'b1;
+
+endmodule
+```
+
+</details>
+
+## 163 Case statement
+<details>
+<summary>详情</summary>
+
+这个组合电路应该识别键 0 到 9 的 8 位键盘扫描码。它应该指示 10 种情况中的一种是否被识别（有效），如果是，则检测到哪个键。  
+```
+module top_module (
+    input [7:0] code,
+    output reg [3:0] out,
+    output reg valid=1 );//
+
+     always @(*)
+        case (code)
+            8'h45: out = 0;
+            8'h16: out = 1;
+            8'h1e: out = 2;
+            8'd26: out = 3;
+            8'h25: out = 4;
+            8'h2e: out = 5;
+            8'h36: out = 6;
+            8'h3d: out = 7;
+            8'h3e: out = 8;
+            6'h46: out = 9;
+            default: valid = 0;
+        endcase
+
+endmodule
+```
+
+**分析**  
+初值问题。。。  
+细节。。。  
+
+**答案**  
+```
+module top_module (
+    input [7:0] code,
+    output reg [3:0] out,
+    output reg valid
+);//
+
+    always @(*) begin
+        out = 4'b0;
+        valid = 1;
+        case (code)
+            8'h45: out = 0;
+            8'h16: out = 1;
+            8'h1e: out = 2;
+            8'h26: out = 3;
+            8'h25: out = 4;
+            8'h2e: out = 5;
+            8'h36: out = 6;
+            8'h3d: out = 7;
+            8'h3e: out = 8;
+            8'h46: out = 9;
+            default: valid = 0;
+        endcase
+    end
+
+endmodule
+```
+
+</details>

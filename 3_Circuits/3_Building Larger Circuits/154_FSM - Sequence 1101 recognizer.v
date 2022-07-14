@@ -1,28 +1,33 @@
 module top_module (
     input clk,
-    input reset,
+    input reset,      // Synchronous reset
     input data,
-    output start_shifting
-);
+    output start_shifting);
 
-reg [2:0] cs, ns;
-parameter D = 3'b000,
-          D1 = 3'b001,
-          D11 = 3'b010,
-          D110 = 3'b011,
-          D1101 = 3'b100;
-always @(posedge clk)
-    if (reset) cs <= D;
-    else cs <= ns;
-always @(*)
-    case (cs)
-        D: ns = data ? D1 : D;
-        D1: ns = data ? D11 : D;
-        D11: ns = data ? D11 : D110;
-        D110: ns = data ? D1101 : D;
-        D1101: ns = D1101;
-        default: ns = D;
-    endcase
-assign start_shifting = cs == D1101;
+    parameter A=3'b000,
+    		  B=3'b001,
+    		  C=3'b010,
+    		  D=3'b011,
+    		  E=3'b100;
+
+    reg [2:0] state,next_state;
+
+    always @(*) begin
+        case(state)
+            A: next_state = data ? B : A;
+            B: next_state = data ? C : A;
+            C: next_state = data ? C : D;
+            D: next_state = data ? E : A;
+            E: next_state = E;
+            default: next_state = A;
+        endcase
+    end
+
+    always @(posedge clk) begin
+        if (reset) state <= A;
+        else state <= next_state;
+    end
+
+    assign start_shifting = (state==E);
 
 endmodule

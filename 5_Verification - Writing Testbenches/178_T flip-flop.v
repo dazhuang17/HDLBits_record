@@ -1,23 +1,24 @@
 `timescale 1ps / 1ps
+module top_module ();
+    reg clk,reset,t;
+    wire q;
 
-module top_module;
+    tff u_tff (clk, reset, t, q);
 
-reg clk, reset, t;
-initial begin
-    clk = 1'b0;
-    reset = 1'b0;
-end
-always
-    #5 clk = ~clk;
-initial begin
-    #5 reset = 1'b1;
-    #20 reset = 1'b0;
-end
-always @(posedge clk)
-    if (reset) t <= 1'b0;
-    else t <= 1'b1;
+    initial begin
+        clk = 0;
+        reset = 0;
+        #5
+        reset = 1;
+        #5
+        reset = 0;
+    end
 
-wire q;
-tff tff_0 (clk, reset, t, q);
+    always #5 clk = ~clk;
+
+    always @(posedge clk) begin
+        if (reset) t <= 0;
+        else t <= 1;
+    end
 
 endmodule

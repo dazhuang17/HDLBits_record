@@ -1,73 +1,224 @@
-# hardware_details
+# Verification - Writing Testbenches
 
-## 0 写在前面
-- 具体硬件
-  - [气象百叶窗](./books/JXBS-3001-BYX.doc)
-  - [北斗定位装置](./books/HS6601.pdf)
-- 关于硬件，这边只做简单介绍
+## 174 Clock
+<details>
+<summary>详情</summary>
 
-## 1 接口说明
-- **气象百叶窗**
-  <details>
-  <summary>详情</summary>  
-        
-    **气象百叶窗实物如下**  
-    ![Image text](./images/0.jpg) 
-    ![Image text](./images/1.jpg)  
+编写一个测试平台，创建一个module dut 实例（具有任何实例名称），并创建一个时钟信号来驱动模块的 clk 输入。
+时钟的周期为 10 ps。时钟应初始化为零，其第一次转换为 0 到 1。  
+`module dut ( input clk ) ;`  
 
-    **note：**
-  - 电源接口为宽电压电源输入 12-24V 均可。485 信号线接线时注意 A/B 两条线不能接反，总线上多台设备间地址不能冲突
-  - 出厂默认提供0.6米长线材 ，客户可根据需要按需延长线材或者顺次接线。
-  </details>
+![](./images/0.jpg)  
 
+**分析**  
+- 逻辑设计中输入对应 reg 型。  
+- 使用 initial 或 always 语句产生激励。  
 
-- **北斗定位装置**
-  <details>
-  <summary>详情</summary>  
-        
-    **北斗接口定义**
-
-    |编号|端子定义|说明|
-    |:---:|:---:|:---:|
-    |1|电源适配器接口|输入 5~28V 直流电源|
-    |2|天线|SMA 天线接口|
-    |3|VCC|输出电源正极，与电源适配器接口联通|
-    |4|GND|输出电源负极|
-    |5|485 A|RS485 总线的A|
-    |6|485 B|RS485 总线的B|
-    |7|PWR 指示灯|电源指示灯，上电常亮|
-    |8|RUN 指示灯|运行指示灯，正常运行时亮 1 秒，灭 1 秒|
-    |9|TXD 指示灯|发送指示灯，向 RS485/RS232 总线接发送数据时闪烁|
-    |10|RXD 指示灯|接收指示灯，从 RS485/RS232 总线接收到数据时闪烁|
-    |11|PPS|秒脉冲指示灯	定位无效时常亮；定位有效后，每秒闪烁一次|
-    |12|按键|长按 5 秒，开始恢复出厂设置，同时 RUN 运行指示灯快闪，完成后，运行指示灯正常闪烁。出厂设置为：地址为 1，串口通信 9600/8/One/None。|
+**答案**  
+```
+`timescale 1ps / 1ps
+module top_module ( );
+    parameter timer=5;
     
-    **北斗实物图**  
-    ![Image text](./images/2.jpg) 
-  </details>
+    reg clk;
+    dut u_dut( .clk(clk) ) ;
+    
+    initial begin 
+        clk = 0;
+    end
+    
+    always begin 
+        # timer
+        clk = ~clk;
+    end 
 
-## 2 安装说明
-- 安装位置需要注意以下事项
-  <details>
-  <summary>详情</summary>
+endmodule
+```
 
-  - 变送器应尽量水平安防，保证安装垂直于水平面。
-  - 安装高度为人体坐高或主要要求测量的环境区域。
-  </details>
-  
-- 同时请注意以下防范事项
-  <details>
-  <summary>详情</summary>  
-  
-  - 避免在易于传热且会直接造成与待测区域产生温差的地带安装，否则会造成温湿度测量不准确。
-  - 安装在环境稳定的区域,避免直接光照,远离窗口及空调、暖气等设备,避免直对窗口、房门。
-  - 尽量远离大功率干扰设备，以免造成测量的不准确,如变频器、电机等。
-  </details>
+</details>
 
-## 附件连接
-- [硬件说明](./hw_details.md)。
-- [数据库配置](./db_config.md)。
-- [系统测试](./system_test.md)。
-- [系统常见问题](./Q&A.md)。
+## 175 Testbench1
+<details>
+<summary>详情</summary>
 
+创建一个 Verilog 测试平台，它将为输出 A 和 B 生成以下波形。  
 
+![](./images/1.jpg)  
+
+**分析**  
+无。  
+
+**答案**  
+```
+`timescale 1ps / 1ps
+module top_module ( output reg A, output reg B );//
+	
+    // generate input patterns here
+    initial begin
+        A = 1'b0;
+        B = 1'b0;
+        #10
+        A = 1'b1;
+        #5
+        B = 1'b1;
+        #5
+        A = 1'b0;
+        #20
+		B = 1'b0;
+    end
+
+endmodule
+```
+
+</details>
+
+## 176 AND gate
+<details>
+<summary>详情</summary>
+
+您将获得以下要测试的 AND 门：  
+```
+module andgate (
+    input [1:0] in,
+    output out
+);
+```
+
+通过生成以下时序图，编写一个实例化此 AND 门并测试所有 4 个输入组合的测试平台:  
+
+![](./images/2.jpg)  
+
+**分析**  
+- 逻辑设计中输入对应 reg 型。
+- 逻辑设计中输出对应 wire 型。
+
+**答案**  
+```
+`timescale 1ps / 1ps
+module top_module();
+	
+    reg [1:0] in;
+    wire out;
+    
+    andgate u_andgate(in, out);
+    
+    initial begin
+        in = 2'b0;
+        #10 in = 2'b01;
+        #10 in = 2'b10;
+        #10 in = 2'b11;
+    end
+     
+endmodule
+```
+
+</details>
+
+## 177 Testbench2
+<details>
+<summary>详情</summary>
+
+提供以下时序和模块：    
+```
+module q7 (
+    input clk,
+    input in,
+    input [2:0] s,
+    output out
+);
+```
+
+![](./images/3.jpg)  
+
+编写一个测试平台，实例化模块 q7 并生成这些输入信号，如上图所示。  
+
+**分析**  
+- 逻辑设计中输入对应 reg 型。  
+- 逻辑设计中输出对应 wire 型。  
+
+**答案**  
+```
+`timescale 1ps / 1ps
+module top_module();
+	
+    reg clk;
+    reg [2:0] s;
+    reg in;
+    wire out;
+
+    q7 u_q7(clk, in, s, out);
+
+    initial begin
+        clk = 1'b0;
+        in = 1'b0;
+        s = 2;
+        #10 
+        s = 6;
+        #10 
+        in = 1;
+        s = 2;
+        #10
+        in = 0;
+        s = 7;
+        #10
+        in = 1;
+        s = 0;
+        #30
+        in = 0;
+    end
+    
+    always #5 clk = ~clk;
+
+endmodule
+```
+
+</details>
+
+## 178 T flip-flop
+<details>
+<summary>详情</summary>
+
+给定一个 T 触发器模块，其声明如下：  
+```
+module tff (
+    input clk,
+    input reset,   // active-high synchronous reset
+    input t,       // toggle
+    output q
+);
+```
+
+Write a testbench that instantiates one tff and will reset the T flip-flop then toggle it to the "1" state.  
+
+**分析**  
+产生一个复位。  
+
+**答案**  
+```
+`timescale 1ps / 1ps
+module top_module ();
+    reg clk,reset,t;
+    wire q;
+    
+    tff u_tff (clk, reset, t, q);
+    
+    initial begin
+        clk = 0;
+        reset = 0;
+        #5
+        reset = 1;
+        #5
+        reset = 0;
+    end
+    
+    always #5 clk = ~clk;
+    
+    always @(posedge clk) begin
+        if (reset) t <= 0;
+        else t <= 1;
+    end
+
+endmodule
+```
+
+</details>
